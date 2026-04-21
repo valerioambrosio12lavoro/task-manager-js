@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTaskManager - Valerio Ambrosio</title>
+    <style>
+        :root {
+            --primary: #00ff88; /* Verde come il tuo CV */
+            --bg: #121212;
+            --text: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 { border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: #333;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            background: var(--primary);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        ul { list-style: none; padding: 0; }
+        li {
+            background: #2a2a2a;
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        li:hover { transform: translateX(5px); }
+        .delete-btn { background: #ff4444; color: white; padding: 5px 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Dev Task Manager</h2>
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Aggiungi un nuovo task...">
+        <button onclick="addTask()">Aggiungi</button>
+    </div>
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    // Carica i task salvati all'avvio
+    document.addEventListener('DOMContentLoaded', getTasks);
+
+    function addTask() {
+        const input = document.getElementById('taskInput');
+        if (input.value === '') return;
+
+        createTaskElement(input.value);
+        saveLocal(input.value);
+        input.value = '';
+    }
+
+    function createTaskElement(text) {
+        const li = document.createElement('li');
+        li.innerHTML = `${text} <button class="delete-btn" onclick="removeTask(this)">Elimina</button>`;
+        document.getElementById('taskList').appendChild(li);
+    }
+
+    function removeTask(btn) {
+        const task = btn.parentElement;
+        removeFromLocal(task.firstChild.textContent.trim());
+        task.remove();
+    }
+
+    // --- LOGICA LOCAL STORAGE ---
+    function saveLocal(task) {
+        let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+        tasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function getTasks() {
+        let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+        tasks.forEach(task => createTaskElement(task));
+    }
+
+    function removeFromLocal(task) {
+        let tasks = JSON.parse(localStorage.getItem('tasks'));
+        tasks = tasks.filter(t => t !== task);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+</script>
+
+</body>
+</html>
